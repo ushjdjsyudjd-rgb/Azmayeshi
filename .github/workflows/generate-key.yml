@@ -1,11 +1,11 @@
-name: Generate Permanent Key
-on: workflow_dispatch # فقط وقتی دستی دکمه را بزنید اجرا می‌شود
+name: Generate Key Only
+on: workflow_dispatch
 jobs:
-  generate:
+  key-gen:
     runs-on: ubuntu-latest
     steps:
-      - name: Create Key
+      - name: Generate Base64
         run: |
           keytool -genkey -v -keystore release.keystore -alias bmi_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=BMI, OU=Dev, O=BMI, L=Rasht, S=Gilan, C=IR"
           echo "Your Base64 Key below:"
-          base64 release.keystore # این کد طولانی را کپی کنید
+          base64 release.keystore
