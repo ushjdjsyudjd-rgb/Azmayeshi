@@ -1,0 +1,8 @@
+{
+  "appId": "com.gildokht.app",
+  "appName": "گیلدخت",
+  "webDir": ".",
+  "server": {
+    "allowNavigation": ["*"]
+  }
+}
