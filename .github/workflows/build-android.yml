@@ -25,14 +25,8 @@ jobs:
       - name: Prepare Web Directory
         run: |
           mkdir -p www
-          # تلاش برای پیدا کردن فایل ایندکس در مسیرهای مختلف
-          if [ -f app/src/main/assets/index.html ]; then
-            cp app/src/main/assets/index.html www/
-          elif [ -f index.html ]; then
-            cp index.html www/
-          else
-            echo "<html><body><h1>BMI Gil Rasht</h1></body></html>" > www/index.html
-          fi
+          # کپی دقیق فایل اصلی از مسیری که در عکس فرستادید
+          cp app/src/main/assets/index.html www/
           
           mkdir -p assets
           cp icon.png assets/icon.png 2>/dev/null || true
@@ -48,7 +42,7 @@ jobs:
           cp icon.png assets/icon-foreground.png 2>/dev/null || true
           cp icon.png assets/icon-background.png 2>/dev/null || true
           cp icon.png assets/splash.png 2>/dev/null || true
-          npx capacitor-assets generate --android || echo "Assets generation skipped"
+          npx capacitor-assets generate --android || echo "Assets skipped"
 
       - name: Build Android Project
         run: |
@@ -57,7 +51,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Sign APK (Universal Fixed Version)
+      - name: Sign APK
         id: sign_app
         uses: r0adkll/sign-android-release@v1
         with:
@@ -67,7 +61,6 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
         env:
-          # استفاده از نسخه 30.0.3 که در تمام سرورهای گیت‌هاب موجود است
           BUILD_TOOLS_VERSION: "30.0.3"
 
       - name: Upload Official Signed APK
