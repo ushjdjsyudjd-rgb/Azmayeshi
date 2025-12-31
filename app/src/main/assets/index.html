@@ -4,213 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>اپلیکیشن شعبه گیل رشت</title>
-    <meta name="theme-color" content="#0d66a1">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* استایل‌های پایه برای حذف وابستگی به تلویند */
-        body { font-family: Tahoma, Geneva, sans-serif; background-color: #f8fafc; margin: 0; padding: 16px; direction: rtl; -webkit-tap-highlight-color: transparent; }
-        .bmi-card { background: linear-gradient(135deg, #0d66a1 0%, #228cc8 100%); border-radius: 40px; padding: 35px 20px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 12px 35px rgba(13, 102, 161, 0.25); gap: 18px; margin-bottom: 2rem; }
-        .digital-clock { font-size: 3.8rem; font-weight: 900; letter-spacing: -2px; line-height: 1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); font-family: sans-serif; cursor: pointer; }
-        .new-msg-alert { animation: pulse-yellow 1.5s infinite; color: #fbbf24 !important; }
-        @keyframes pulse-yellow { 0% { transform: scale(1); } 50% { transform: scale(1.05); text-shadow: 0 0 25px rgba(251, 191, 36, 0.8); } 100% { transform: scale(1); } }
+        body { font-family: Tahoma, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; direction: rtl; -webkit-tap-highlight-color: transparent; }
         
-        .service-row { background: white; border-radius: 30px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; }
-        .bottom-cards-container { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
-        .bottom-card { background: white; border-radius: 30px; padding: 25px 15px; width: 48%; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; cursor: pointer; }
+        /* Splash Screen */
+        #splash-screen { position: fixed; inset: 0; z-index: 9999; background: #0d66a1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.5s; }
         
-        .icon-box { width: 48px; height: 48px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-        .bg-blue-soft { background-color: #eff6ff; color: #2563eb; }
-        .bg-emerald-soft { background-color: #ecfdf5; color: #059669; }
-        .bg-rose-soft { background-color: #fff1f2; color: #f43f5e; }
-        .bg-orange-soft { background-color: #fff7ed; color: #ea580c; }
-        
-        /* Modal & UI */
-        #contactModal { display: none; background: rgba(13, 102, 161, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; padding: 24px; }
-        #splash-screen { position: fixed; inset: 0; z-index: 9999; background: #0d66a1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.6s ease; }
-        .page { display: none; }
+        /* Layout */
+        .page { display: none; padding: 16px; min-height: 100vh; box-sizing: border-box; }
         .active-page { display: block; }
         
-        /* Form & Inputs */
-        .input-field { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; margin-bottom: 16px; font-size: 14px; box-sizing: border-box; }
-        .btn-primary { background: #2563eb; color: white; padding: 1.25rem; border-radius: 1rem; font-weight: 900; width: 100%; border: none; font-size: 1.1rem; }
+        /* Main Page Components */
+        .bmi-card { background: linear-gradient(135deg, #0d66a1 0%, #228cc8 100%); border-radius: 35px; padding: 30px 20px; color: white; text-align: center; box-shadow: 0 10px 25px rgba(13,102,161,0.2); margin-bottom: 25px; }
+        .digital-clock { font-size: 3.5rem; font-weight: bold; font-family: sans-serif; margin-bottom: 10px; }
+        .shamsi-box { background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px; display: inline-block; font-size: 13px; }
         
-        /* Chat */
-        .chat-container { display: flex; flex-direction: column; height: 100vh; background: #f1f5f9; position: fixed; inset: 0; z-index: 100; }
-        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
-        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 22px; font-size: 13px; line-height: 1.6; }
-        .user-bubble { align-self: flex-end; background: #0d66a1; color: white; border-bottom-right-radius: 4px; }
-        .admin-bubble { align-self: flex-start; background: white; color: #1e293b; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .service-row { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #f1f5f9; }
+        .icon-sq { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-left: 12px; }
+        
+        /* Chat UI Fixes */
+        .chat-container { display: flex; flex-direction: column; height: 100vh; background: #f1f5f9; position: fixed; inset: 0; z-index: 100; padding: 0 !important; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 14px; line-height: 1.5; position: relative; min-width: 60px; }
+        .user-bubble { align-self: flex-end; background: #0d66a1; color: white; border-bottom-right-radius: 5px; text-align: right; }
+        .admin-bubble { align-self: flex-start; background: white; color: #334155; border-bottom-left-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .chat-footer { padding: 10px; background: white; display: flex; gap: 8px; border-top: 1px solid #ddd; }
+        .chat-input { flex: 1; border: 1px solid #eee; background: #f8fafc; padding: 12px; border-radius: 15px; outline: none; }
+        .send-btn { background: #0d66a1; color: white; border: none; padding: 0 20px; border-radius: 15px; font-weight: bold; }
+
+        /* Modal */
+        #contactModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; border-radius: 30px; overflow: hidden; }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-        <h1 style="font-size: 2rem; margin-bottom: 10px;">بانک ملی ایران</h1>
-        <p style="font-weight: bold; opacity: 0.9;">شعبه گیل رشت</p>
+        <h1 style="font-size: 24px;">بانک ملی ایران</h1>
+        <p>شعبه گیل رشت</p>
     </div>
 
     <div id="main-page" class="page active-page">
         <div class="bmi-card">
-            <div id="digiClock" class="digital-clock" onclick="promptAdmin()">00:00</div>
-            <div style="background:#fbbf24; color:#0d66a1; padding: 6px 24px; border-radius: 50px; font-weight: 900; font-size: 11px;">شعبه گیل رشت</div>
-            <div style="font-size: 10px; opacity: 0.8; font-weight: bold;">کد ۳۷۱۶</div>
-            <div id="shamsiDate" style="font-size: 13px; font-weight: 900; background: rgba(255,255,255,0.1); padding: 10px 30px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">...</div>
-            <button onclick="toggleModal(true)" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 12px 30px; border-radius: 50px; color: white; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <span>📞</span><span style="font-size: 13px; font-weight: 900;">تماس با شعبه</span>
-            </button>
-        </div>
-
-        <div style="padding: 0 4px; margin-bottom: 2rem;">
-            <div class="service-row" onclick="window.location.href='https://baam.bmi.ir'">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="icon-box bg-blue-soft">🌐</div>
-                    <div><div style="font-size: 13px; font-weight: 900; color: #1e293b;">همراه بام ملی</div><div style="font-size: 10px; color: #94a3b8; font-weight: bold;">ورود به سامانه</div></div>
-                </div>
-                <span>❮</span>
-            </div>
-            <div class="service-row" onclick="window.location.href='https://bamapps.bmi.ir/app/android/Baam_4.23.1.594.apk'">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="icon-box bg-emerald-soft">📥</div>
-                    <div><div style="font-size: 13px; font-weight: 900; color: #1e293b;">دانلود نسخه اندروید</div><div style="font-size: 10px; color: #94a3b8; font-weight: bold;">دریافت مستقیم فایل</div></div>
-                </div>
-                <span>❮</span>
+            <div id="digiClock" class="digital-clock">00:00</div>
+            <div class="shamsi-box" id="shamsiDate">...</div>
+            <div style="margin-top:15px;">
+                <button onclick="toggleModal(true)" style="background:rgba(255,255,255,0.2); border:1px solid white; color:white; padding:10px 25px; border-radius:50px; cursor:pointer;">📞 تماس با شعبه</button>
             </div>
         </div>
 
-        <div class="bottom-cards-container">
-            <div class="bottom-card" onclick="window.location.href='https://bmi.ir/landing/mehrbani'">
-                <div class="icon-box bg-rose-soft" style="border-radius: 50%; width: 56px; height: 56px; margin-bottom: 10px; font-size: 1.5rem;">❤️</div>
-                <div style="font-size: 12px; font-weight: 900; color: #334155; text-align: center;">محاسبه‌گر<br>طرح مهربانی</div>
+        <div class="service-row" onclick="window.location.href='https://baam.bmi.ir'">
+            <div style="display:flex; align-items:center;">
+                <div class="icon-sq" style="background:#eff6ff; color:#2563eb;">🌐</div>
+                <div style="text-align:right;"><b style="font-size:14px;">همراه بام ملی</b><br><small style="color:#94a3b8;">سامانه خدمات اینترنتی</small></div>
             </div>
-            <div class="bottom-card" onclick="window.location.href='https://bmi.ir/fa/calculators/melli'">
-                <div class="icon-box bg-orange-soft" style="border-radius: 50%; width: 56px; height: 56px; margin-bottom: 10px; font-size: 1.5rem;">🧮</div>
-                <div style="font-size: 12px; font-weight: 900; color: #334155; text-align: center;">محاسبه‌گر<br>طرح اعتبار ملی</div>
-            </div>
+            <span>❮</span>
         </div>
 
-        <div class="service-row" style="border: 2px solid #dbeafe; box-shadow: 0 10px 20px rgba(0,0,0,0.05);" onclick="showPage('form-page')">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div class="icon-box" style="background: #2563eb; color: white;">📝</div>
-                <div style="font-size: 14px; font-weight: 900; color: #1e3a8a;">فرم پرسشنامه</div>
+        <div class="service-row" onclick="showPage('form-page')" style="border: 2px solid #0d66a1; margin-top:20px;">
+            <div style="display:flex; align-items:center;">
+                <div class="icon-sq" style="background:#0d66a1; color:white;">📝</div>
+                <b style="font-size:15px; color:#0d66a1;">فرم پرسشنامه مشتریان</b>
             </div>
-            <span style="color: #2563eb; font-weight: bold; font-size: 14px;">شروع ❮</span>
-        </div>
-    </div>
-
-    <div id="form-page" class="page bg-white min-h-screen p-6">
-        <h2 style="text-align: center; font-weight: 900; color: #1e3a8a; border-bottom: 1px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem;">ورود اطلاعات مشتری</h2>
-        <form id="infoForm" onsubmit="handleReview(event)">
-            <label style="font-size: 13px; font-weight: bold; color: #475569;">کد ملی</label>
-            <input type="text" name="national_id" class="input-field" required maxlength="10">
-            <div style="display: flex; gap: 10px;">
-                <div style="flex: 1;"><label style="font-size: 13px; font-weight: bold; color: #475569;">نام</label><input type="text" name="fname" class="input-field" required></div>
-                <div style="flex: 1;"><label style="font-size: 13px; font-weight: bold; color: #475569;">نام خانوادگی</label><input type="text" name="lname" class="input-field" required></div>
-            </div>
-            <label style="font-size: 13px; font-weight: bold; color: #475569;">تلفن همراه</label>
-            <input type="text" name="mobile" class="input-field" required maxlength="11">
-            <button type="submit" class="btn-primary">ثبت و بررسی</button>
-            <button type="button" onclick="showPage('main-page')" style="width: 100%; border: none; background: none; color: #94a3b8; font-weight: bold; margin-top: 20px;">بازگشت</button>
-        </form>
-    </div>
-
-    <div id="contactModal">
-        <div style="background: white; width: 100%; max-width: 350px; border-radius: 40px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-            <div style="padding: 20px; background: #0d66a1; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 900; font-size: 14px;">ارتباط با شعبه</span>
-                <button onclick="toggleModal(false)" style="background: none; border: none; color: white; font-size: 30px; cursor: pointer;">&times;</button>
-            </div>
-            <div style="padding: 25px;">
-                <button onclick="openChat()" style="width: 100%; padding: 18px; background: #10b981; color: white; border: none; border-radius: 25px; font-weight: 900; margin-bottom: 20px; cursor: pointer;">💬 شروع گفتگو آنلاین</button>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <a href="tel:01333666474" style="text-decoration: none; color: black; display: flex; justify-content: space-between; padding: 12px 20px; background: #f8fafc; border-radius: 50px; border: 1px solid #eee; font-size: 13px;"><span>ریاست</span><span style="font-family: sans-serif;">01333666474</span></a>
-                    <a href="tel:01333609169" style="text-decoration: none; color: black; display: flex; justify-content: space-between; padding: 12px 20px; background: #f8fafc; border-radius: 50px; border: 1px solid #eee; font-size: 13px;"><span>معاونت</span><span style="font-family: sans-serif;">01333609169</span></a>
-                </div>
-            </div>
+            <span style="color:#0d66a1; font-weight:bold;">شروع ❯</span>
         </div>
     </div>
 
     <div id="chat-page" class="page chat-container">
-        <div style="padding: 15px; background: #0d66a1; color: white; display: flex; justify-content: space-between; align-items: center;">
-            <button onclick="showPage('main-page')" style="background:none; border:none; color:white; font-weight:bold;">✕ بستن</button>
-            <span style="font-weight: 900;">پشتیبانی آنلاین</span>
-            <div style="width: 40px;"></div>
+        <div style="padding:15px; background:#0d66a1; color:white; display:flex; justify-content:space-between; align-items:center;">
+            <button onclick="showPage('main-page')" style="background:none; border:none; color:white; font-size:18px;">✕</button>
+            <b style="font-size:16px;">پشتیبانی آنلاین شعبه</b>
+            <div style="width:20px;"></div>
         </div>
-        <div id="chat-messages" class="messages-area"></div>
-        <div style="padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; box-sizing: border-box;">
-            <input type="text" id="user-input" placeholder="پیام شما..." style="flex: 1; background: #f1f5f9; border: none; padding: 15px; border-radius: 15px; outline: none;">
-            <button onclick="sendChatMessage('user')" style="background: #0d66a1; color: white; border: none; padding: 0 25px; border-radius: 15px; font-weight: bold;">ارسال</button>
+        <div id="chat-messages" class="messages-area">
+            </div>
+        <div class="chat-footer">
+            <input type="text" id="user-input" class="chat-input" placeholder="پیام خود را بنویسید...">
+            <button onclick="sendChatMessage()" class="send-btn">ارسال</button>
+        </div>
+    </div>
+
+    <div id="form-page" class="page bg-white">
+        <button onclick="showPage('main-page')" style="margin-bottom:20px; border:none; background:none; color:#0d66a1; font-weight:bold;">❮ بازگشت</button>
+        <h3>تکمیل اطلاعات</h3>
+        <input type="text" placeholder="نام و نام خانوادگی" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; margin-bottom:15px;">
+        <button style="width:100%; padding:15px; background:#0d66a1; color:white; border:none; border-radius:10px; font-weight:bold;">ثبت اطلاعات</button>
+    </div>
+
+    <div id="contactModal" onclick="toggleModal(false)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="padding:20px; background:#0d66a1; color:white; text-align:center;"><b>انتخاب نوع ارتباط</b></div>
+            <div style="padding:20px;">
+                <button onclick="openChat()" style="width:100%; padding:15px; background:#10b981; color:white; border:none; border-radius:15px; font-weight:bold; margin-bottom:15px;">💬 چت آنلاین با شعبه</button>
+                <a href="tel:01333666474" style="display:block; text-align:center; padding:12px; background:#f1f5f9; border-radius:50px; text-decoration:none; color:#334155; margin-bottom:10px;">📞 تماس با ریاست</a>
+                <a href="tel:01333663062" style="display:block; text-align:center; padding:12px; background:#f1f5f9; border-radius:50px; text-decoration:none; color:#334155;">📞 تماس با اعتبارات</a>
+            </div>
         </div>
     </div>
 
     <script>
-        const FORM_API = 'https://sheetdb.io/api/v1/w833ye9603km1';
         const CHAT_API = 'https://sheetdb.io/api/v1/czatwlt4x2234';
-        let lastMsgCount = 0;
-        let finalData = {};
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            const target = document.getElementById(id);
-            if(target) target.classList.add('active-page');
-            window.scrollTo(0,0);
+            document.getElementById(id).classList.add('active-page');
+            if(id === 'chat-page') fetchMessages();
         }
 
         function toggleModal(s) { document.getElementById('contactModal').style.display = s ? 'flex' : 'none'; }
         function openChat() { toggleModal(false); showPage('chat-page'); }
 
-        // منطق ساعت و تاریخ
+        // ساعت
         setInterval(() => {
             const n = new Date();
-            const clockEl = document.getElementById('digiClock');
-            if(clockEl) clockEl.textContent = String(n.getHours()).padStart(2,'0')+":"+String(n.getMinutes()).padStart(2,'0');
+            document.getElementById('digiClock').textContent = String(n.getHours()).padStart(2,'0') + ":" + String(n.getMinutes()).padStart(2,'0');
         }, 1000);
+        document.getElementById('shamsiDate').textContent = new Intl.DateTimeFormat('fa-IR', {dateStyle:'full'}).format(new Date());
 
-        document.getElementById('shamsiDate').textContent = new Intl.DateTimeFormat('fa-IR', {weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date());
+        // توابع چت
+        async function sendChatMessage() {
+            const input = document.getElementById('user-input');
+            const txt = input.value.trim();
+            if(!txt) return;
+            
+            // نمایش موقت پیام کاربر برای سرعت بیشتر
+            const cBox = document.getElementById('chat-messages');
+            cBox.innerHTML += `<div class="bubble user-bubble"><small style="display:block; opacity:0.7; font-size:9px;">مشتری</small>${txt}</div>`;
+            input.value = '';
+            cBox.scrollTop = cBox.scrollHeight;
 
-        // لودینگ اولیه
-        window.addEventListener('load', () => {
-            setTimeout(() => { 
-                const s = document.getElementById('splash-screen');
-                if(s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 600); }
+            try {
+                await fetch(CHAT_API, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({data: [{sender: 'مشتری', message: txt, role: 'user', timestamp: new Date().toLocaleTimeString('fa-IR')}]})
+                });
                 fetchMessages();
-            }, 1500);
-        });
+            } catch(e) {}
+        }
 
-        // توابع چت (همان توابع شما)
         async function fetchMessages() {
             try {
                 const res = await fetch(CHAT_API);
                 const data = await res.json();
                 const cBox = document.getElementById('chat-messages');
-                if(!cBox) return;
                 cBox.innerHTML = data.map(m => `
                     <div class="bubble ${m.role==='user'?'user-bubble':'admin-bubble'}">
-                        <div style="font-size: 9px; opacity: 0.6; font-weight: bold;">${m.sender}</div>${m.message}
+                        <small style="display:block; opacity:0.7; font-size:9px;">${m.sender}</small>${m.message}
                     </div>
                 `).join('');
                 cBox.scrollTop = cBox.scrollHeight;
             } catch(e) {}
         }
 
-        async function sendChatMessage(role) {
-            const input = document.getElementById('user-input');
-            if(!input.value) return;
-            try {
-                await fetch(CHAT_API, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({data: [{sender: 'مشتری', message: input.value, role: 'user', timestamp: new Date().toLocaleTimeString('fa-IR')}]})
-                });
-                input.value = '';
-                fetchMessages();
-            } catch(e) {}
-        }
-        
-        function handleReview(e) {
-            e.preventDefault();
-            alert("اطلاعات ثبت شد. در نسخه آفلاین، خروجی PDF نیاز به اینترنت دارد.");
-            showPage('main-page');
-        }
+        window.onload = () => {
+            setTimeout(() => { 
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash-screen').remove(), 500);
+            }, 2000);
+        };
+
+        // بروزرسانی خودکار چت هر 10 ثانیه اگر صفحه چت باز باشد
+        setInterval(() => {
+            if(document.getElementById('chat-page').classList.contains('active-page')) fetchMessages();
+        }, 10000);
     </script>
 </body>
 </html>
