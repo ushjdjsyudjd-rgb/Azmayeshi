@@ -26,20 +26,23 @@ jobs:
 
       - name: Prepare Web Directory
         run: |
+          # ایجاد پوشه موقت برای Capacitor
           mkdir -p www
-          cp index.html www/
+          # کپی فایل ایندکس از مسیری که قبلاً ساخته‌اید (app/src/main/assets/)
+          cp app/src/main/assets/index.html www/
+          # کپی آیکون از ریشه اصلی به پوشه دارایی‌ها
           mkdir -p assets
-          cp icon.png assets/icon.png 2>/dev/null || cp icon.png icon.png
+          cp icon.png assets/icon.png
 
       - name: Initialize and Create Android
         run: |
           rm -rf android
-          npx cap init "گیلدخت" "com.gildokht.app" --web-dir www
+          # تغییر نام به شعبه گیل رشت و تنظیم شناسه پکیج
+          npx cap init "شعبه گیل رشت" "com.bmi.gil_rasht" --web-dir www
           npx cap add android
 
-      - name: Generate Assets (Fix Icon Background)
+      - name: Generate Assets (Icons and Splash)
         run: |
-          # کپی آیکون برای تمامی لایه‌ها جهت حذف سیاهی و سفیدی دور آیکون
           cp icon.png assets/icon-foreground.png
           cp icon.png assets/icon-background.png
           cp icon.png assets/splash.png
@@ -52,15 +55,15 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
           
-          # ساخت کلید ساین
-          keytool -genkey -v -keystore release.keystore -alias gildokht_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=Gildokht, OU=Dev, O=Gildokht, L=Rasht, S=Gilan, C=IR"
+          # ساخت کلید امضا موقت
+          keytool -genkey -v -keystore release.keystore -alias bmi_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=BMI, OU=Dev, O=BMI, L=Rasht, S=Gilan, C=IR"
           
-          # ساین کردن نهایی
+          # ساین کردن فایل خروجی
           sudo apt-get install -y apksigner
           apksigner sign --ks release.keystore --ks-pass pass:123456 --out app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload Official Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gildokht-Official-Signed-APK
+          name: BMI-Gil-Rasht-Signed-APK
           path: android/app-release-signed.apk
