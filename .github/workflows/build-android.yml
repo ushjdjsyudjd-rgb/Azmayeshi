@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
@@ -26,44 +24,43 @@ jobs:
 
       - name: Prepare Web Directory
         run: |
-          # ایجاد پوشه موقت برای Capacitor
           mkdir -p www
-          # کپی فایل ایندکس از مسیری که قبلاً ساخته‌اید (app/src/main/assets/)
           cp app/src/main/assets/index.html www/
-          # کپی آیکون از ریشه اصلی به پوشه دارایی‌ها
           mkdir -p assets
-          cp icon.png assets/icon.png
+          cp icon.png assets/icon.png 2>/dev/null || true
 
       - name: Initialize and Create Android
         run: |
           rm -rf android
-          # تغییر نام به شعبه گیل رشت و تنظیم شناسه پکیج
           npx cap init "شعبه گیل رشت" "com.bmi.gil_rasht" --web-dir www
           npx cap add android
 
-      - name: Generate Assets (Icons and Splash)
+      - name: Generate Assets
         run: |
-          cp icon.png assets/icon-foreground.png
-          cp icon.png assets/icon-background.png
-          cp icon.png assets/splash.png
+          cp icon.png assets/icon-foreground.png 2>/dev/null || true
+          cp icon.png assets/icon-background.png 2>/dev/null || true
+          cp icon.png assets/splash.png 2>/dev/null || true
           npx capacitor-assets generate --android
 
-      - name: Build and Sign APK
+      - name: Build Android Project
         run: |
           npx cap copy
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
-          
-          # ساخت کلید امضا موقت
-          keytool -genkey -v -keystore release.keystore -alias bmi_alias -keyalg RSA -keysize 2048 -validity 10000 -storepass 123456 -keypass 123456 -dname "CN=BMI, OU=Dev, O=BMI, L=Rasht, S=Gilan, C=IR"
-          
-          # ساین کردن فایل خروجی
-          sudo apt-get install -y apksigner
-          apksigner sign --ks release.keystore --ks-pass pass:123456 --out app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Sign APK (The Secure Way)
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Upload Official Signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: BMI-Gil-Rasht-Signed-APK
-          path: android/app-release-signed.apk
+          name: BMI-Gil-Rasht-Official-APK
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
