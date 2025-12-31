@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>شعبه گیل رشت - نسخه اپلیکیشن</title>
+    <title>اپلیکیشن شعبه گیل رشت</title>
     <meta name="theme-color" content="#0d66a1">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -11,29 +11,34 @@
     <style>
         body { font-family: Vazirmatn, sans-serif; background-color: #f8fafc; margin: 0; padding: 16px; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; }
         .bmi-card { background: linear-gradient(135deg, #0d66a1 0%, #228cc8 100%); border-radius: 40px; padding: 35px 20px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 12px 35px rgba(13, 102, 161, 0.25); gap: 18px; }
-        
-        /* افکت اعلان پیام جدید */
-        .new-msg-active { color: #facc15 !important; animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.5; } }
-
         .digital-clock { font-size: 3.8rem; font-weight: 900; letter-spacing: -2px; line-height: 1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); font-family: sans-serif; cursor: pointer; }
+        
+        /* انیمیشن اعلان پیام جدید روی ساعت */
+        .new-msg-alert { animation: pulse-yellow 1.5s infinite; color: #fbbf24 !important; }
+        @keyframes pulse-yellow {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); text-shadow: 0 0 25px rgba(251, 191, 36, 0.8); }
+            100% { transform: scale(1); }
+        }
+
         .service-row { background: white; border-radius: 30px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; }
         .bottom-card { background: white; border-radius: 30px; padding: 25px 15px; width: 48%; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; cursor: pointer; }
-        #contactModal { display: none; background: rgba(13, 102, 161, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        
+        #contactModal { display: none; background: rgba(13, 102, 161, 0.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; padding: 24px; }
         #splash-screen { position: fixed; inset: 0; z-index: 9999; background: #0d66a1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.6s ease; }
+        
         .page { display: none; }
-        .active-page { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .field-label { display: block; font-size: 13px; font-weight: bold; color: #475569; margin-bottom: 6px; margin-right: 4px; }
-        .required-star { color: #ef4444; margin-right: 2px; }
-        .input-field { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; margin-bottom: 16px; font-size: 14px; outline: none; }
+        .active-page { display: block; }
 
-        /* چت روم */
-        .chat-container { display: flex; flex-direction: column; height: 100vh; background: #f8fafc; position: fixed; inset: 0; z-index: 100; }
-        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }
-        .bubble { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 13px; line-height: 1.5; }
+        .field-label { display: block; font-size: 13px; font-weight: bold; color: #475569; margin-bottom: 6px; margin-right: 4px; }
+        .input-field { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; margin-bottom: 16px; font-size: 14px; outline: none; }
+        
+        /* چت */
+        .chat-container { display: flex; flex-direction: column; height: 100vh; background: #f1f5f9; position: fixed; inset: 0; z-index: 100; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 110px; }
+        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 22px; font-size: 13px; line-height: 1.6; }
         .user-bubble { align-self: flex-end; background: #0d66a1; color: white; border-bottom-right-radius: 4px; }
-        .admin-bubble { align-self: flex-start; background: white; color: #334155; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
+        .admin-bubble { align-self: flex-start; background: white; color: #1e293b; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -51,14 +56,14 @@
                 <div class="bg-[#fbbf24] text-[#0d66a1] text-[11px] px-6 py-1.5 rounded-full font-black">شعبه گیل رشت</div>
                 <div class="text-[10px] opacity-80 font-bold">کد ۳۷۱۶</div>
                 <div id="shamsiDate" class="text-[13px] font-black bg-white/10 px-8 py-2.5 rounded-full border border-white/10 backdrop-blur-md">...</div>
-                <button onclick="toggleModal(true)" class="mt-2 bg-white/20 border border-white/30 px-8 py-3 rounded-full flex items-center gap-3 active:scale-95">
-                    <span class="text-lg">📞</span><span class="text-[13px] font-black">تماس و گفتگو آنلاین</span>
+                <button onclick="toggleModal(true)" class="mt-2 bg-white/20 border border-white/30 px-8 py-3 rounded-full flex items-center gap-3 active:scale-95 transition">
+                    <span class="text-lg">📞</span><span class="text-[13px] font-black">تماس با شعبه</span>
                 </button>
             </div>
         </div>
 
         <div class="mb-8 px-1">
-            <div class="service-row" onclick="window.location.href='https://baam.bmi.ir/fa/auth/login'">
+            <div class="service-row" onclick="window.location.href='https://baam.bmi.ir'">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">🌐</div>
                     <div><div class="text-[13px] font-black text-slate-800">همراه بام ملی</div><div class="text-[10px] text-slate-400 font-bold">ورود به سامانه</div></div>
@@ -96,57 +101,47 @@
         </div>
     </div>
 
-    <div id="form-page" class="page bg-white min-h-screen rounded-t-[40px] p-6 shadow-2xl">
+    <div id="form-page" class="page bg-white min-h-screen p-6">
         <h2 class="text-center font-black text-xl mb-8 text-blue-900 border-b pb-4">ورود اطلاعات مشتری</h2>
         <form id="infoForm" onsubmit="handleReview(event)">
-            <label class="field-label">کد ملی<span class="required-star">*</span></label>
-            <input type="text" name="national_id" class="input-field" required maxlength="10" pattern="\d{10}" inputmode="numeric">
-            
+            <label class="field-label">کد ملی</label>
+            <input type="text" name="national_id" class="input-field" required maxlength="10" inputmode="numeric">
             <div class="flex gap-4">
                 <div class="w-1/2"><label class="field-label">نام</label><input type="text" name="fname" class="input-field" required></div>
                 <div class="w-1/2"><label class="field-label">نام خانوادگی</label><input type="text" name="lname" class="input-field" required></div>
             </div>
-
-            <label class="field-label">شماره شناسنامه<span class="required-star">*</span></label>
-            <input type="text" name="id_num" class="input-field" required maxlength="10" inputmode="numeric">
-
-            <label class="field-label">تاریخ تولد<span class="required-star">*</span></label>
-            <input type="text" name="dob" placeholder="۱۳۷۰/۰۱/۰۱" class="input-field" required maxlength="10" inputmode="numeric" oninput="formatDate(this)">
-
-            <label class="field-label">تلفن همراه<span class="required-star">*</span></label>
+            <label class="field-label">تاریخ تولد</label>
+            <input type="text" name="dob" placeholder="۱۳۷۰/۰۱/۰۱" class="input-field" required maxlength="10" oninput="formatDate(this)">
+            <label class="field-label">تلفن همراه</label>
             <input type="text" name="mobile" class="input-field" required maxlength="11" inputmode="numeric">
-
-            <label class="field-label">شماره حساب (۱۳ رقم)<span class="required-star">*</span></label>
+            <label class="field-label">شماره حساب</label>
             <input type="text" name="acc" class="input-field" required maxlength="13" inputmode="numeric">
-
-            <label class="field-label">آدرس منزل<span class="required-star">*</span></label>
+            <label class="field-label">آدرس منزل</label>
             <textarea name="addr" class="input-field h-24" required></textarea>
-
-            <button type="submit" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-black text-lg mt-4 shadow-lg active:scale-95 transition">ثبت اطلاعات</button>
-            <button type="button" onclick="showPage('main-page')" class="w-full text-slate-400 mt-6 text-sm font-bold">انصراف و بازگشت</button>
+            
+            <button type="submit" class="w-full bg-blue-600 text-white p-5 rounded-2xl font-black text-lg mt-4">ثبت و بررسی</button>
+            <button type="button" onclick="showPage('main-page')" class="w-full text-slate-400 mt-6 font-bold">بازگشت</button>
         </form>
     </div>
 
     <div id="review-page" class="page p-6">
         <div class="bg-white rounded-[40px] p-8 shadow-2xl border-2 border-orange-100">
-            <h2 class="font-black text-xl mb-6 text-orange-600 text-center">تایید نهایی اطلاعات</h2>
-            <div id="review-content" class="text-[12px] space-y-2 bg-slate-50 p-4 rounded-3xl border border-slate-200 mb-8 text-right font-bold overflow-y-auto max-h-[400px]"></div>
-            <div class="flex flex-col gap-4">
-                <button onclick="processFinalStep()" id="sendBtn" class="bg-green-600 text-white p-5 rounded-2xl font-black active:scale-95">تایید و دریافت نسخه PDF</button>
-                <button onclick="showPage('form-page')" class="bg-slate-200 text-slate-700 p-5 rounded-2xl font-black">ویرایش اطلاعات</button>
-            </div>
+            <h2 class="font-black text-xl mb-6 text-orange-600 text-center">تایید اطلاعات</h2>
+            <div id="review-content" class="text-[12px] space-y-2 bg-slate-50 p-4 rounded-3xl border mb-8 font-bold"></div>
+            <button onclick="processFinalStep()" id="sendBtn" class="w-full bg-green-600 text-white p-5 rounded-2xl font-black">تایید و ارسال نهایی</button>
+            <button onclick="showPage('form-page')" class="w-full bg-slate-100 text-slate-600 p-4 rounded-2xl mt-4 font-bold">ویرایش</button>
         </div>
     </div>
 
     <div id="chat-page" class="page chat-container">
-        <div class="p-4 bg-[#0d66a1] text-white flex justify-between items-center shadow-lg">
+        <div class="p-4 bg-[#0d66a1] text-white flex justify-between items-center">
             <button onclick="showPage('main-page')" class="font-bold">✕ بستن</button>
-            <span class="font-black">پشتیبانی آنلاین شعبه</span>
+            <span class="font-black">پشتیبانی آنلاین</span>
             <div class="w-8"></div>
         </div>
         <div id="chat-messages" class="messages-area"></div>
         <div class="p-4 bg-white flex gap-2 border-t fixed bottom-0 w-full">
-            <input type="text" id="user-input" placeholder="پیام شما..." class="flex-1 bg-slate-100 p-4 rounded-2xl outline-none text-sm border focus:border-blue-500">
+            <input type="text" id="user-input" placeholder="پیام شما..." class="flex-1 bg-slate-100 p-4 rounded-2xl outline-none text-sm">
             <button onclick="sendChatMessage('user')" class="bg-[#0d66a1] text-white px-6 rounded-2xl font-bold">ارسال</button>
         </div>
     </div>
@@ -154,68 +149,56 @@
     <div id="admin-page" class="page chat-container bg-slate-50">
         <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
             <button onclick="showPage('main-page')" class="bg-red-500 px-4 py-1 rounded-lg text-xs">خروج</button>
-            <span class="font-black">مدیریت پیام‌ها (ارشد)</span>
-            <button onclick="fetchMessages(true)" class="text-xl">🔄</button>
+            <span class="font-black">مدیریت (ارشد)</span>
+            <button onclick="fetchMessages()" class="text-xl">🔄</button>
         </div>
         <div id="admin-list" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
     </div>
 
-    <div id="contactModal" class="fixed inset-0 z-50 flex items-center justify-center p-6">
-        <div class="bg-white/95 w-full max-w-sm rounded-[45px] shadow-2xl overflow-hidden border border-white">
-            <div class="p-6 bg-[#0d66a1] text-white flex justify-between items-center rounded-t-[45px]">
-                <span class="font-black text-sm">ارتباط با شعبه گیل</span>
+    <div id="contactModal">
+        <div class="bg-white w-full max-w-sm rounded-[45px] shadow-2xl overflow-hidden">
+            <div class="p-6 bg-[#0d66a1] text-white flex justify-between items-center">
+                <span class="font-black text-sm">ارتباط با شعبه</span>
                 <button onclick="toggleModal(false)" class="text-3xl">&times;</button>
             </div>
-            <div class="p-6 space-y-3" dir="rtl">
-                <button onclick="openChat()" class="w-full flex items-center justify-center gap-3 p-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg mb-2">
-                    💬 گفتگو آنلاین با پشتیبانی
-                </button>
-                <hr class="my-4">
-                <a href="tel:01333666474" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border shadow-sm"><span class="text-[12px] font-bold text-slate-700">ریاست شعبه</span><span class="text-[#0d66a1] font-black font-sans">01333666474</span></a>
-                <a href="tel:01333609169" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border shadow-sm"><span class="text-[12px] font-bold text-slate-700">معاون شعبه</span><span class="text-[#0d66a1] font-black font-sans">01333609169</span></a>
-                <a href="tel:01333663062" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border shadow-sm"><span class="text-[12px] font-bold text-slate-700">اعتبارات</span><span class="text-[#0d66a1] font-black font-sans">01333663062</span></a>
-                <a href="tel:01333600449" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border shadow-sm"><span class="text-[12px] font-bold text-slate-700">صندوق</span><span class="text-[#0d66a1] font-black font-sans">01333600449</span></a>
+            <div class="p-6 space-y-3">
+                <button onclick="openChat()" class="w-full p-5 bg-emerald-500 text-white rounded-3xl font-black shadow-lg mb-4">💬 شروع گفتگو آنلاین</button>
+                <a href="tel:01333666474" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border"><span>ریاست</span><span class="font-sans">01333666474</span></a>
+                <a href="tel:01333609169" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border"><span>معاونت</span><span class="font-sans">01333609169</span></a>
+                <a href="tel:01333663062" class="flex justify-between items-center p-4 bg-slate-50 rounded-full border"><span>اعتبارات</span><span class="font-sans">01333663062</span></a>
             </div>
-            <button onclick="toggleModal(false)" class="w-full p-4 text-slate-400 text-[11px] font-bold border-t">بستن پنجره</button>
         </div>
     </div>
 
     <script>
         const FORM_API = 'https://sheetdb.io/api/v1/w833ye9603km1';
         const CHAT_API = 'https://sheetdb.io/api/v1/czatwlt4x2234';
-        let lastMsgId = 0;
-        let isUserInAdmin = false;
-
-        // ورود مدیریت با رمز ۵۷۶۲
-        function promptAdmin() {
-            const pass = prompt("رمز ورود مدیر ارشد را وارد کنید:");
-            if(pass === "5762") {
-                isUserInAdmin = true;
-                document.getElementById('digiClock').classList.remove('new-msg-active');
-                showPage('admin-page');
-            } else if(pass !== null) alert("رمز نامعتبر");
-        }
+        let lastMsgCount = 0;
+        let finalData = {};
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
-            isUserInAdmin = (id === 'admin-page');
-            if(id === 'chat-page' || id === 'admin-page') fetchMessages();
             window.scrollTo(0,0);
         }
 
-        function toggleModal(show) { document.getElementById('contactModal').style.display = show ? 'flex' : 'none'; }
+        function toggleModal(s) { document.getElementById('contactModal').style.display = s ? 'flex' : 'none'; }
         function openChat() { toggleModal(false); showPage('chat-page'); }
 
-        // فرمت تاریخ
-        function formatDate(el) {
-            let val = el.value.replace(/\D/g, '');
-            if (val.length > 4 && val.length <= 6) el.value = val.slice(0, 4) + '/' + val.slice(4);
-            else if (val.length > 6) el.value = val.slice(0, 4) + '/' + val.slice(4, 6) + '/' + val.slice(6, 8);
-            else el.value = val;
+        function promptAdmin() {
+            if(prompt("رمز ادمین:") === "5762") {
+                document.getElementById('digiClock').classList.remove('new-msg-alert');
+                showPage('admin-page');
+            }
         }
 
-        // سیستم چت
+        function formatDate(el) {
+            let v = el.value.replace(/\D/g,'');
+            if(v.length > 4 && v.length <= 6) el.value = v.slice(0,4)+'/'+v.slice(4);
+            else if(v.length > 6) el.value = v.slice(0,4)+'/'+v.slice(4,6)+'/'+v.slice(6,8);
+        }
+
+        // CHAT LOGIC
         async function sendChatMessage(role, msgText = null) {
             const input = document.getElementById('user-input');
             const text = msgText || input.value;
@@ -224,93 +207,97 @@
                 await fetch(CHAT_API, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({data: [{sender: role === 'user' ? 'مشتری' : 'مدیریت', message: text, role: role, timestamp: new Date().toLocaleTimeString('fa-IR')}]})
+                    body: JSON.stringify({data: [{sender: role==='user'?'مشتری':'مدیریت', message: text, role: role, timestamp: new Date().toLocaleTimeString('fa-IR')}]})
                 });
                 if(!msgText) input.value = '';
                 fetchMessages();
-            } catch (e) { alert("خطا در ارسال پیام"); }
+            } catch(e) {}
         }
 
-        async function fetchMessages(isManual = false) {
+        async function fetchMessages() {
             try {
                 const res = await fetch(CHAT_API);
                 const data = await res.json();
-                if(!isUserInAdmin && data.length > lastMsgId) {
-                    if(lastMsgId !== 0) {
-                        document.getElementById('digiClock').classList.add('new-msg-active');
-                        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                    }
-                    lastMsgId = data.length;
+                
+                // اعلان پیام جدید
+                const isMainPage = document.getElementById('main-page').classList.contains('active-page');
+                if(isMainPage && data.length > lastMsgCount && lastMsgCount !== 0) {
+                    document.getElementById('digiClock').classList.add('new-msg-alert');
+                    if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 }
-                const chatBox = document.getElementById('chat-messages');
-                chatBox.innerHTML = '';
-                data.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = `bubble ${m.role === 'user' ? 'user-bubble' : 'admin-bubble'}`;
-                    div.innerHTML = `<div class="text-[9px] opacity-60 font-bold">${m.sender}</div>${m.message}`;
-                    chatBox.appendChild(div);
-                });
-                if(!isManual) chatBox.scrollTop = chatBox.scrollHeight;
+                lastMsgCount = data.length;
 
-                const adminBox = document.getElementById('admin-list');
-                adminBox.innerHTML = '';
-                data.filter(m => m.role === 'user').reverse().forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = "bg-white p-4 rounded-2xl border shadow-sm";
-                    div.innerHTML = `<div class="text-[10px] text-blue-500 mb-1">${m.timestamp}</div><div class="text-sm font-bold mb-3">${m.message}</div><button onclick="replyToUser('${m.message}')" class="w-full py-2 bg-blue-600 text-white rounded-xl text-xs font-black">پاسخ دادن</button>`;
-                    adminBox.appendChild(div);
-                });
-            } catch (e) { console.log("Sync error"); }
+                // رندر چت کاربر
+                const cBox = document.getElementById('chat-messages');
+                cBox.innerHTML = data.map(m => `
+                    <div class="bubble ${m.role==='user'?'user-bubble':'admin-bubble'}">
+                        <div class="text-[9px] opacity-60 font-bold">${m.sender}</div>${m.message}
+                    </div>
+                `).join('');
+                cBox.scrollTop = cBox.scrollHeight;
+
+                // رندر لیست ادمین
+                const aBox = document.getElementById('admin-list');
+                aBox.innerHTML = data.filter(m => m.role==='user').reverse().map(m => `
+                    <div class="bg-white p-4 rounded-2xl border shadow-sm">
+                        <div class="text-[10px] text-blue-500 mb-1">${m.timestamp}</div>
+                        <div class="text-sm font-bold mb-3">${m.message}</div>
+                        <button onclick="replyToUser('${m.message}')" class="w-full py-2 bg-blue-600 text-white rounded-xl text-xs font-black">پاسخ دادن</button>
+                    </div>
+                `).join('');
+            } catch(e) {}
         }
 
-        function replyToUser(msg) {
-            const reply = prompt(`پاسخ به: ${msg}`);
-            if(reply) sendChatMessage('admin', reply);
+        function replyToUser(m) {
+            const r = prompt(`پاسخ به: ${m}`);
+            if(r) sendChatMessage('admin', r);
         }
 
-        // سیستم فرم پرسشنامه (مطابق منطق شما)
-        let finalData = {};
+        // FORM LOGIC
         function handleReview(e) {
             e.preventDefault();
-            const fd = new FormData(e.target);
-            finalData = Object.fromEntries(fd.entries());
-            let html = "";
-            for(let k in finalData) html += `<div class="flex justify-between border-b py-2"><span class="text-slate-500">${k}:</span><b>${finalData[k]}</b></div>`;
-            document.getElementById('review-content').innerHTML = html;
+            finalData = Object.fromEntries(new FormData(e.target).entries());
+            document.getElementById('review-content').innerHTML = Object.entries(finalData).map(([k,v]) => `<div class="flex justify-between border-b py-2"><span>${k}:</span><span>${v}</span></div>`).join('');
             showPage('review-page');
         }
 
         async function processFinalStep() {
-            const btn = document.getElementById('sendBtn');
-            btn.innerHTML = "در حال ارسال..."; btn.disabled = true;
+            const b = document.getElementById('sendBtn');
+            b.innerHTML = "در حال ارسال..."; b.disabled = true;
             try {
-                // ارسال به اکسل فرم‌ها
+                // دانلود PDF
+                const opt = { margin: 10, filename: 'Melli-Form.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' }};
+                const el = document.createElement('div');
+                el.innerHTML = `<div style="direction:rtl;padding:20px;"><h1>فرم بانک ملی</h1>${document.getElementById('review-content').innerHTML}</div>`;
+                await html2pdf().set(opt).from(el).save();
+                
+                // ارسال به اکسل قدیمی
                 await fetch(FORM_API, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({data: [finalData]})
                 });
-                alert("ثبت شد!");
+                alert("ارسال موفقیت‌آمیز بود.");
                 showPage('main-page');
-            } catch (e) { alert("خطا!"); }
-            finally { btn.innerHTML = "تایید نهایی"; btn.disabled = false; }
+            } catch(e) { alert("خطا در ارسال!"); }
+            finally { b.innerHTML = "تایید و ارسال نهایی"; b.disabled = false; }
         }
 
-        // ساعت و تاریخ
+        // INITIALIZE
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('digiClock').textContent = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+            const n = new Date();
+            document.getElementById('digiClock').textContent = String(n.getHours()).padStart(2,'0')+":"+String(n.getMinutes()).padStart(2,'0');
         }, 1000);
-        document.getElementById('shamsiDate').textContent = new Intl.DateTimeFormat('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date());
-
-        // زمانبندی چک کردن پیام‌ها
+        document.getElementById('shamsiDate').textContent = new Intl.DateTimeFormat('fa-IR', {weekday:'long',year:'numeric',month:'long',day:'numeric'}).format(new Date());
         setInterval(() => { if(!document.hidden) fetchMessages(); }, 8000);
 
-        window.addEventListener('load', () => { setTimeout(() => { 
-            const splash = document.getElementById('splash-screen'); 
-            if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 600); }
-            fetchMessages();
-        }, 1500); });
+        window.addEventListener('load', () => {
+            setTimeout(() => { 
+                const s = document.getElementById('splash-screen');
+                if(s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 600); }
+                fetchMessages();
+            }, 1500);
+        });
     </script>
 </body>
 </html>
