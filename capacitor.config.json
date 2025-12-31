@@ -1,8 +1,9 @@
 {
-  "appId": "com.gildokht.app",
-  "appName": "گیلدخت",
-  "webDir": ".",
+  "appId": "com.bmi.gil_rasht",
+  "appName": "شعبه گیل رشت",
+  "webDir": "www",
   "server": {
+    "androidScheme": "https",
     "allowNavigation": ["*"]
   }
 }
